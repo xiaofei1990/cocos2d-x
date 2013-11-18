@@ -1,6 +1,6 @@
 #include "MciPlayer.h"
 
-#define WIN_CLASS_NAME        "CocosDenshionCallbackWnd"
+#define WIN_CLASS_NAME        L"CocosDenshionCallbackWnd"
 #define BREAK_IF(cond)      if (cond) break;
 
 namespace CocosDenshion {
@@ -83,9 +83,14 @@ void MciPlayer::Open(const char* pFileName, UINT uId)
         MCI_OPEN_PARMS mciOpen = {0};
         MCIERROR mciError;
         mciOpen.lpstrDeviceType = (LPCTSTR)MCI_ALL_DEVICE_ID;
-        mciOpen.lpstrElementName = pFileName;
 
+        int bufflen = MultiByteToWideChar(CP_UTF8, 0, pFileName, -1, NULL, 0);
+        WCHAR* pFileNameW = new WCHAR[bufflen + 1];
+        memset(pFileNameW, 0, sizeof(WCHAR) * (bufflen + 1));
+        MultiByteToWideChar(CP_UTF8, 0, pFileName, -1, pFileNameW, bufflen);
+		mciOpen.lpstrElementName = pFileNameW;
         mciError = mciSendCommand(0,MCI_OPEN, MCI_OPEN_ELEMENT, (DWORD)&mciOpen);
+        delete []pFileNameW;
         BREAK_IF(mciError);
 
         m_hDev = mciOpen.wDeviceID;
