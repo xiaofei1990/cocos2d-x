@@ -262,19 +262,16 @@ public:
     virtual void setSearchPaths(const std::vector<std::string>& searchPaths);
     
     /**
-      * Adds a path to search paths.
-	  *
-	  * @since v2.2
+     * Set search root path.
       */
-     virtual void addSearchPath(const char* path);
+    void setSearchRootPath(const char* path);
 
     /**
-      * Removes a path from search paths.
+      * Add search path.
       *
-      * @since v2.2
-      * @lua NA
+      * @since v2.1
       */
-	 virtual void removeSearchPath(const char *path);
+     void addSearchPath(const char* path);
 
     /**
       * Removes all paths.
@@ -289,17 +286,26 @@ public:
      *  
      *  @return The array of search paths.
      *  @see fullPathForFilename(const char*).
-     *  @js NA
-     *  @lua NA
      */
     virtual const std::vector<std::string>& getSearchPaths();
 
     /**
      *  Gets the writable path.
      *  @return  The path that can be write/read a file in
-     *  @lua NA
      */
     virtual std::string getWritablePath() = 0;
+    
+    /**
+     *  Gets the cache path.
+     *  @return  The the cache path
+     */
+    virtual std::string getCachePath();
+
+    /**
+     *  Set writable/cache path (for debug).
+     */
+    virtual void setWritablePath(const char *writablePath);
+    virtual void setCachePath(const char *cachePath);
     
     /**
      *  Checks whether a file exists.
@@ -307,9 +313,16 @@ public:
      *  @note If a relative path was passed in, it will be inserted a default root path at the beginning.
      *  @param strFilePath The path of the file, it could be a relative or absolute path.
      *  @return true if the file exists, otherwise it will return false.
-     *  @lua NA
      */
     virtual bool isFileExist(const std::string& strFilePath) = 0;
+    
+    /**
+     *  Checks whether a directory exists.
+     *
+     *  @param strDirPath The path of the directory, it could be an absolute path only.
+     *  @return true if the directory exists, otherwise it will return false.
+     */
+    virtual bool isDirectoryExist(const std::string& strDirPath) = 0;
     
     /**
      *  Checks whether the path is an absolute path.
@@ -319,7 +332,6 @@ public:
      *
      *  @param strPath The path that needs to be checked.
      *  @return true if it's an absolute path, otherwise it will return false.
-     *  @lua NA
      */
     virtual bool isAbsolutePath(const std::string& strPath);
     
@@ -394,6 +406,8 @@ protected:
      */
     virtual CCArray* createCCArrayWithContentsOfFile(const std::string& filename);
     
+    void updateSearchPathArrayCheck(void);
+    
     /** Dictionary used to lookup filenames based on a key.
      *  It is used internally by the following methods:
      *
@@ -414,6 +428,7 @@ protected:
      * The lower index of the element in this vector, the higher priority for this search path.
      */
     std::vector<std::string> m_searchPathArray;
+    std::vector<std::string> m_searchPathArrayCheck;
     
     /**
      *  The default root path of resources.
@@ -431,10 +446,19 @@ protected:
     std::map<std::string, std::string> m_fullPathCache;
     
     /**
+     * Writable path (for debug)
+     */
+    std::string m_strWritablePath;
+
+    /**
+     * Cache path (for debug)
+     */
+    std::string m_strCachePath;
+    
+    /**
      *  The singleton pointer of CCFileUtils.
      */
     static CCFileUtils* s_sharedFileUtils;
-    
 };
 
 // end of platform group

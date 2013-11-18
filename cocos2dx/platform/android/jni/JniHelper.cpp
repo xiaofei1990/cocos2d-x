@@ -51,13 +51,13 @@ extern "C"
         {
             if (JAVAVM->GetEnv((void**)env, JNI_VERSION_1_4) != JNI_OK)
             {
-                LOGD("Failed to get the environment using GetEnv()");
+                LOGD("%s", "Failed to get the environment using GetEnv()");
                 break;
             }
 
             if (JAVAVM->AttachCurrentThread(env, 0) < 0)
             {
-                LOGD("Failed to get the environment using AttachCurrentThread()");
+                LOGD("%s", "Failed to get the environment using AttachCurrentThread()");
                 break;
             }
 

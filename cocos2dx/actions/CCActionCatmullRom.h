@@ -42,6 +42,7 @@
 #include "CCActionInterval.h"
 #include "base_nodes/CCNode.h"
 #include "cocoa/CCGeometry.h"
+#include "cocoa/CCPointArray.h"
 
 NS_CC_BEGIN;
 
@@ -49,68 +50,6 @@ NS_CC_BEGIN;
  * @addtogroup actions
  * @{
  */
-
-/** An Array that contain control points.
- * Used by CCCardinalSplineTo and (By) and CCCatmullRomTo (and By) actions.
- * @ingroup Actions
- * @js NA
- */
-class CC_DLL CCPointArray : public CCObject
-{
-public:
-    
-    /** creates and initializes a Points array with capacity 
-     * @lua NA
-     */
-    static CCPointArray* create(unsigned int capacity);
-    /**
-     * @lua NA
-     */
-    virtual ~CCPointArray();
-    /**
-     * @lua NA
-     */
-    CCPointArray();
-    
-    /** initializes a Catmull Rom config with a capacity hint */
-    bool initWithCapacity(unsigned int capacity);
-    
-    /** appends a control point */
-    void addControlPoint(CCPoint controlPoint);
-    
-    /** inserts a controlPoint at index */
-    void insertControlPoint(CCPoint &controlPoint, unsigned int index);
-    
-    /** replaces an existing controlPoint at index */
-    void replaceControlPoint(CCPoint &controlPoint, unsigned int index);
-    
-    /** get the value of a controlPoint at a given index */
-    CCPoint getControlPointAtIndex(unsigned int index);
-    
-    /** deletes a control point at a given index */
-    void removeControlPointAtIndex(unsigned int index);
-    
-    /** returns the number of objects of the control point array */
-    unsigned int count();
-    
-    /** returns a new copy of the array reversed. User is responsible for releasing this copy */
-    CCPointArray* reverse();
-    
-    /** reverse the current control point array inline, without generating a new one */
-    void reverseInline();
-    /**
-     *  @js NA
-     *  @lua NA
-     */
-    virtual CCObject* copyWithZone(CCZone *zone);
-    
-    const std::vector<CCPoint*>* getControlPoints();
-
-    void setControlPoints(std::vector<CCPoint*> *controlPoints);
-private:
-    /** Array that contains the control points */
-    std::vector<CCPoint*> *m_pControlPoints;
-};
 
 /** Cardinal Spline path.
  http://en.wikipedia.org/wiki/Cubic_Hermite_spline#Cardinal_spline

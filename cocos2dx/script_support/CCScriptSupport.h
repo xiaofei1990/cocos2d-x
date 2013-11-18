@@ -209,7 +209,7 @@ public:
      @param functionName String object holding the name of the function, in the global script environment, that is to be executed.
      @return The integer value returned from the script function.
      */
-    virtual int executeGlobalFunction(const char* functionName) = 0;
+    virtual int executeGlobalFunction(const char* functionName, int numArgs = 0) = 0;
     
     /**
      @brief Execute a node event function
@@ -217,7 +217,7 @@ public:
      @param nAction kCCNodeOnEnter,kCCNodeOnExit,kCCMenuItemActivated,kCCNodeOnEnterTransitionDidFinish,kCCNodeOnExitTransitionDidStart
      @return The integer value returned from the script function.
      */
-    virtual int executeNodeEvent(CCNode* pNode, int nAction) = 0;
+    virtual int executeNodeEvent(CCNode* pNode, int nAction, float dt = 0) = 0;
     
     virtual int executeMenuItemEvent(CCMenuItem* pMenuItem) = 0;
     /** Execute a notification event function */
@@ -229,8 +229,8 @@ public:
     virtual int executeSchedule(int nHandler, float dt, CCNode* pNode = NULL) = 0;
     
     /** functions for executing touch event */
-    virtual int executeLayerTouchesEvent(CCLayer* pLayer, int eventType, CCSet *pTouches) = 0;
-    virtual int executeLayerTouchEvent(CCLayer* pLayer, int eventType, CCTouch *pTouch) = 0;
+    virtual int executeNodeTouchesEvent(CCNode* pNode, int eventType, CCSet *pTouches) = 0;
+    virtual int executeNodeTouchEvent(CCNode* pNode, int eventType, CCTouch *pTouch) = 0;
 
     /** functions for keypad event */
     virtual int executeLayerKeypadEvent(CCLayer* pLayer, int eventType) = 0;
@@ -241,9 +241,6 @@ public:
     /** function for common event */
     virtual int executeEvent(int nHandler, const char* pEventName, CCObject* pEventSource = NULL, const char* pEventSourceClassName = NULL) = 0;
     
-    /** function for c++ call back lua funtion */
-    virtual int executeEventWithArgs(int nHandler, CCArray* pArgs) { return 0; }
-
     /** called by CCAssert to allow scripting engine to handle failed assertions
      * @return true if the assert was handled by the script engine, false otherwise.
      */
