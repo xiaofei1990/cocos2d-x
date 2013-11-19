@@ -39,6 +39,7 @@
 #endif
 
 #include "support/zip_support/unzip.h"
+#include "script_support/CCScriptSupport.h"
 
 using namespace cocos2d;
 using namespace std;
@@ -83,6 +84,7 @@ AssetsManager::AssetsManager(const char* packageUrl/* =NULL */, const char* vers
 , _tid(NULL)
 , _connectionTimeout(0)
 , _delegate(NULL)
+, _scriptHandler(0)
 {
     checkStoragePath();
     _schedule = new Helper();
@@ -94,6 +96,7 @@ AssetsManager::~AssetsManager()
     {
         _schedule->release();
     }
+    unregisterScriptHandler();
 }
 
 void AssetsManager::checkStoragePath()
@@ -273,14 +276,22 @@ bool AssetsManager::uncompress()
         const size_t filenameLength = strlen(fileName);
         if (fileName[filenameLength-1] == '/')
         {
+			// get all dir
+			string fileNameStr = string(fileName);
+			int position = 0;
+			while((position=fileNameStr.find_first_of("/",position))!=string::npos)
+			{
+				string dirPath =_storagePath + fileNameStr.substr(0, position);
             // Entry is a direcotry, so create it.
             // If the directory exists, it will failed scilently.
-            if (!createDirectory(fullPath.c_str()))
+				if (!createDirectory(dirPath.c_str()))
             {
-                CCLOG("can not create directory %s", fullPath.c_str());
-                unzClose(zipfile);
-                return false;
+					CCLOG("can not create directory %s", dirPath.c_str());
+					//unzClose(zipfile);
+					//return false;
             }
+				position++;
+        }
         }
         else
         {
@@ -485,6 +496,18 @@ void AssetsManager::setDelegate(AssetsManagerDelegateProtocol *delegate)
     _delegate = delegate;
 }
 
+void AssetsManager::registerScriptHandler(int handler)
+{
+    unregisterScriptHandler();
+    _scriptHandler = handler;
+}
+
+void AssetsManager::unregisterScriptHandler(void)
+{
+    CCScriptEngineManager::sharedManager()->getScriptEngine()->removeScriptHandler(_scriptHandler);
+    _scriptHandler = 0;
+}
+
 void AssetsManager::setConnectionTimeout(unsigned int timeout)
 {
     _connectionTimeout = timeout;
@@ -563,6 +586,12 @@ void AssetsManager::Helper::update(float dt)
             {
                 ((ProgressMessage*)msg->obj)->manager->_delegate->onProgress(((ProgressMessage*)msg->obj)->percent);
             }
+            if (((ProgressMessage*)msg->obj)->manager->_scriptHandler)
+            {
+                char buff[10];
+                sprintf(buff, "%d", ((ProgressMessage*)msg->obj)->percent);
+                CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEvent(((ProgressMessage*)msg->obj)->manager->_scriptHandler, buff);
+            }
             
             delete (ProgressMessage*)msg->obj;
             
@@ -573,7 +602,34 @@ void AssetsManager::Helper::update(float dt)
             {
                 ((ErrorMessage*)msg->obj)->manager->_delegate->onError(((ErrorMessage*)msg->obj)->code);
             }
+            if (((ProgressMessage*)msg->obj)->manager->_scriptHandler)
+            {
+                std::string errorMessage;
+                switch ((int)((ErrorMessage*)msg->obj)->code)
+                {
+                case kCreateFile:
+                    errorMessage = "errorCreateFile";
+                    break;
             
+                case kNetwork:
+                    errorMessage = "errorNetwork";
+                    break;
+
+                case kNoNewVersion:
+                    errorMessage = "errorNoNewVersion";
+                    break;
+
+                case kUncompress:
+                    errorMessage = "errorUncompress";
+                    break;
+
+                default:
+                    errorMessage = "errorUnknown";
+                }
+
+                CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEvent(((ProgressMessage*)msg->obj)->manager->_scriptHandler, errorMessage.c_str());
+            }
+
             delete ((ErrorMessage*)msg->obj);
             
             break;
@@ -605,7 +661,17 @@ void AssetsManager::Helper::handleUpdateSucceed(Message *msg)
         CCLOG("can not remove downloaded zip file %s", zipfileName.c_str());
     }
     
-    if (manager) manager->_delegate->onSuccess();
+    if (manager)
+    {
+        if (manager->_delegate)
+        {
+            manager->_delegate->onSuccess();
+}
+        if (manager->_scriptHandler)
+        {
+            CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEvent(manager->_scriptHandler, "success");
+        }
+    }
 }
 
 NS_CC_EXT_END;

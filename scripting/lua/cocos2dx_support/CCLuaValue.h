@@ -78,7 +78,7 @@ typedef union {
  *  @js NA
  *  @lua NA
  */
-class CCLuaValue
+class CC_DLL CCLuaValue
 {
 public:
     static const CCLuaValue intValue(const int intValue);
