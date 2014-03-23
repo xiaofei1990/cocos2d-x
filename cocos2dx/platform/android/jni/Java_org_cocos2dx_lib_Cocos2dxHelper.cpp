@@ -75,6 +75,11 @@ void showDialogJNI(const char * pszMsg, const char * pszTitle) {
     }
 }
 
+void releaseEdit(){
+    s_pfEditTextCallback = NULL;
+    s_ctx = NULL;
+}
+
 void showEditTextDialogJNI(const char* pszTitle, const char* pszMessage, int nInputMode, int nInputFlag, int nReturnType, int nMaxLength, EditTextCallback pfEditTextCallback, void* ctx) {
     if (pszMessage == NULL) {
         return;
@@ -179,6 +184,24 @@ void disableAccelerometerJNI() {
         t.env->DeleteLocalRef(t.classID);
     }
 }
+
+bool inDirectoryExistsJNI(const char* path) {
+    if (!path) return false;
+
+    JniMethodInfo t;
+    if (JniHelper::getStaticMethodInfo(t, CLASS_NAME, "inDirectoryExists", "(Ljava/lang/String;)Z")) {
+        jstring stringArg1;
+
+        stringArg1 = t.env->NewStringUTF(path);
+        jboolean ret = t.env->CallStaticBooleanMethod(t.classID, t.methodID, stringArg1);
+        t.env->DeleteLocalRef(stringArg1);
+        t.env->DeleteLocalRef(t.classID);
+        return ret;
+    }
+
+    return false;
+}
+
 
 // functions for CCUserDefault
 bool getBoolForKeyJNI(const char* pKey, bool defaultValue)

@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "support/tinyxml2/tinyxml2.h"
 #include "support/zip_support/unzip.h"
 #include <stack>
-#include <algorithm>
 
 using namespace std;
 
@@ -477,6 +476,7 @@ bool CCFileUtils::init()
 {
     m_searchPathArray.push_back(m_strDefaultResRootPath);
     m_searchResolutionsOrderArray.push_back("");
+    updateSearchPathArrayCheck();
     return true;
 }
 
@@ -618,8 +618,8 @@ std::string CCFileUtils::fullPathForFilename(const char* pszFileName)
     
     string fullpath = "";
     
-    for (std::vector<std::string>::iterator searchPathsIter = m_searchPathArray.begin();
-         searchPathsIter != m_searchPathArray.end(); ++searchPathsIter) {
+    for (std::vector<std::string>::iterator searchPathsIter = m_searchPathArrayCheck.begin();
+         searchPathsIter != m_searchPathArrayCheck.end(); ++searchPathsIter) {
         for (std::vector<std::string>::iterator resOrderIter = m_searchResolutionsOrderArray.begin();
              resOrderIter != m_searchResolutionsOrderArray.end(); ++resOrderIter) {
             
@@ -667,7 +667,7 @@ void CCFileUtils::setSearchResolutionsOrder(const std::vector<std::string>& sear
         
         if (resolutionDirectory.length() > 0 && resolutionDirectory[resolutionDirectory.length()-1] != '/')
         {
-            resolutionDirectory += "/";
+            resolutionDirectory.append("/");
         }
         
         m_searchResolutionsOrderArray.push_back(resolutionDirectory);
@@ -695,74 +695,28 @@ const std::vector<std::string>& CCFileUtils::getSearchPaths()
 
 void CCFileUtils::setSearchPaths(const std::vector<std::string>& searchPaths)
 {
-    bool bExistDefaultRootPath = false;
-
     m_fullPathCache.clear();
     m_searchPathArray.clear();
-    for (std::vector<std::string>::const_iterator iter = searchPaths.begin(); iter != searchPaths.end(); ++iter)
-    {
-        std::string strPrefix;
-        std::string path;
-        if (!isAbsolutePath(*iter))
-        { // Not an absolute path
-            strPrefix = m_strDefaultResRootPath;
+    m_searchPathArray.assign(searchPaths.begin(), searchPaths.end());
+    updateSearchPathArrayCheck();
         }
-        path = strPrefix+(*iter);
-        if (path.length() > 0 && path[path.length()-1] != '/')
-        {
-            path += "/";
-        }
-        if (!bExistDefaultRootPath && path == m_strDefaultResRootPath)
-        {
-            bExistDefaultRootPath = true;
-        }
-        m_searchPathArray.push_back(path);
-    }
     
-    if (!bExistDefaultRootPath)
+void CCFileUtils::setSearchRootPath(const char* path)
     {
-        //CCLOG("Default root path doesn't exist, adding it.");
-        m_searchPathArray.push_back(m_strDefaultResRootPath);
+    m_fullPathCache.clear();
+    m_strDefaultResRootPath = path ? path : "";
+    updateSearchPathArrayCheck();
     }
-}
 
-void CCFileUtils::addSearchPath(const char* path_)
+void CCFileUtils::addSearchPath(const char* path)
 {
-    std::string strPrefix;
-    std::string path(path_);
-    if (!isAbsolutePath(path))
-    { // Not an absolute path
-        strPrefix = m_strDefaultResRootPath;
-    }
-    path = strPrefix + path;
-    if (path.length() > 0 && path[path.length()-1] != '/')
+    if (path && strlen(path) > 0)
     {
-        path += "/";
-    }
     m_searchPathArray.push_back(path);
+        updateSearchPathArrayCheck();
 }
-
-void CCFileUtils::removeSearchPath(const char *path_)
-{
-	std::string strPrefix;
-	std::string path(path_);
-	if (!isAbsolutePath(path))
-	{ // Not an absolute path
-		strPrefix = m_strDefaultResRootPath;
 	}
-	path = strPrefix + path;
-	if (path.length() > 0 && path[path.length()-1] != '/')
-	{
-		path += "/";
-	}
-	std::vector<std::string>::iterator iter = std::find(m_searchPathArray.begin(), m_searchPathArray.end(), path);
-	m_searchPathArray.erase(iter);
-}
 
-void CCFileUtils::removeAllPaths()
-{
-	m_searchPathArray.clear();
-}
 void CCFileUtils::setFilenameLookupDictionary(CCDictionary* pFilenameLookupDict)
 {
     m_fullPathCache.clear();
@@ -800,10 +754,26 @@ std::string CCFileUtils::getFullPathForDirectoryAndFilename(const std::string& s
     return ret;
 }
 
+std::string CCFileUtils::getCachePath()
+{
+    return m_strCachePath.length() > 0 ? m_strCachePath : getWritablePath();
+}
+
+void CCFileUtils::setWritablePath(const char *writablePath)
+{
+    m_strWritablePath = writablePath ? writablePath : "";
+}
+
+void CCFileUtils::setCachePath(const char *cachePath)
+{
+    m_strCachePath = cachePath ? cachePath : "";
+}
+
 bool CCFileUtils::isAbsolutePath(const std::string& strPath)
 {
     return strPath[0] == '/' ? true : false;
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 // Notification support when getFileData from invalid file path.
@@ -818,6 +788,34 @@ void CCFileUtils::setPopupNotify(bool bNotify)
 bool CCFileUtils::isPopupNotify()
 {
     return s_bPopupNotify;
+}
+
+void CCFileUtils::updateSearchPathArrayCheck(void)
+{
+    size_t len = m_strDefaultResRootPath.length();
+    if (len > 0 && m_strDefaultResRootPath[len - 1] != '/' && m_strDefaultResRootPath[len - 1] != '\\')
+    {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+        m_strDefaultResRootPath.append("\\");
+#else
+        m_strDefaultResRootPath.append("/");
+#endif
+    }
+
+    m_searchPathArrayCheck.clear();
+    for (std::vector<std::string>::iterator it = m_searchPathArray.begin(); it != m_searchPathArray.end(); ++it)
+    {
+        string path = *it;
+        if (!isAbsolutePath(path))
+        {
+            path = m_strDefaultResRootPath + path;
+        }
+        m_searchPathArrayCheck.push_back(path);
+    }
+    if (m_strDefaultResRootPath.length())
+    {
+        m_searchPathArrayCheck.push_back(m_strDefaultResRootPath);
+    }
 }
 
 NS_CC_END

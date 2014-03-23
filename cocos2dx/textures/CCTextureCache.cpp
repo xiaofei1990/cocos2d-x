@@ -36,6 +36,7 @@ THE SOFTWARE.
 #include "support/ccUtils.h"
 #include "CCScheduler.h"
 #include "cocoa/CCString.h"
+#include "script_support/CCScriptSupport.h"
 #include <errno.h>
 #include <stack>
 #include <string>
@@ -61,6 +62,7 @@ typedef struct _AsyncStruct
     std::string            filename;
     CCObject    *target;
     SEL_CallFuncO        selector;
+    int handler;
 } AsyncStruct;
 
 typedef struct _ImageInfo
@@ -253,6 +255,16 @@ CCDictionary* CCTextureCache::snapshotTextures()
 
 void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector)
 {
+    addImageAsyncImpl(path, target, selector);
+}
+
+void CCTextureCache::addImageAsync(const char *path, int handler)
+{
+    addImageAsyncImpl(path, NULL, NULL, handler);
+}
+
+void CCTextureCache::addImageAsyncImpl(const char *path, CCObject *target, SEL_CallFuncO selector, int handler)
+{
 #ifdef EMSCRIPTEN
     CCLOGWARN("Cannot load image %s asynchronously in Emscripten builds.", path);
     return;
@@ -278,6 +290,10 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         if (target && selector)
         {
             (target->*selector)(texture);
+        }
+        if (handler)
+        {
+            CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEvent(handler, "addImageAsync", texture, "CCTexture2D");
         }
         
         return;
@@ -317,6 +333,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     data->filename = fullpath.c_str();
     data->target = target;
     data->selector = selector;
+    data->handler = handler;
 
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
     // add async struct into queue
@@ -355,6 +372,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
         CCObject *target = pAsyncStruct->target;
         SEL_CallFuncO selector = pAsyncStruct->selector;
         const char* filename = pAsyncStruct->filename.c_str();
+        int handler = pAsyncStruct->handler;
 
         // generate texture in render thread
         CCTexture2D *texture = new CCTexture2D();
@@ -378,6 +396,10 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
             (target->*selector)(texture);
             target->release();
         }        
+        if (handler)
+        {
+            CCScriptEngineManager::sharedManager()->getScriptEngine()->executeEvent(handler, "addImageAsync", texture, "CCTexture2D");
+        }
 
         pImage->release();
         delete pAsyncStruct;
@@ -423,6 +445,9 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
         // all images are handled by UIImage except PVR extension that is handled by our own handler
         do 
         {
+
+#ifndef QUICK_MINI_TARGET
+
             if (std::string::npos != lowerCase.find(".pvr"))
             {
                 texture = this->addPVRImage(fullpath.c_str());
@@ -433,12 +458,18 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
                 texture = this->addETCImage(fullpath.c_str());
             }
             else
+
+#endif // QUICK_MINI_TARGET
+
             {
                 CCImage::EImageFormat eImageFormat = CCImage::kFmtUnKnown;
                 if (std::string::npos != lowerCase.find(".png"))
                 {
                     eImageFormat = CCImage::kFmtPng;
                 }
+
+#ifndef QUICK_MINI_TARGET
+
                 else if (std::string::npos != lowerCase.find(".jpg") || std::string::npos != lowerCase.find(".jpeg"))
                 {
                     eImageFormat = CCImage::kFmtJpg;
@@ -447,11 +478,15 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
                 {
                     eImageFormat = CCImage::kFmtTiff;
                 }
+#endif // QUICK_MINI_TARGET
+
                 else if (std::string::npos != lowerCase.find(".webp"))
                 {
                     eImageFormat = CCImage::kFmtWebp;
                 }
                 
+                CC_BREAK_IF(eImageFormat == CCImage::kFmtUnKnown);
+
                 pImage = new CCImage();
                 CC_BREAK_IF(NULL == pImage);
 
@@ -483,6 +518,8 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
     //pthread_mutex_unlock(m_pDictLock);
     return texture;
 }
+
+#ifndef QUICK_MINI_TARGET
 
 CCTexture2D * CCTextureCache::addPVRImage(const char* path)
 {
@@ -545,6 +582,8 @@ CCTexture2D* CCTextureCache::addETCImage(const char* path)
     
     return texture;
 }
+
+#endif // QUICK_MINI_TARGET
 
 CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 {
@@ -895,6 +934,8 @@ void VolatileTexture::reloadAllTextures()
                     lowerCase[i] = tolower(lowerCase[i]);
                 }
 
+#ifndef QUICK_MINI_TARGET
+
                 if (std::string::npos != lowerCase.find(".pvr")) 
                 {
                     CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
@@ -904,6 +945,9 @@ void VolatileTexture::reloadAllTextures()
                     CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
                 } 
                 else 
+
+#endif
+
                 {
                     CCImage* pImage = new CCImage();
                     unsigned long nSize = 0;

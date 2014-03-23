@@ -95,6 +95,11 @@ bool CCFileUtilsAndroid::isFileExist(const std::string& strFilePath)
     return bFound;
 }
 
+bool CCFileUtilsAndroid::isDirectoryExist(const std::string& strDirPath)
+{
+    return inDirectoryExistsJNI(strDirPath.c_str());
+}
+
 bool CCFileUtilsAndroid::isAbsolutePath(const std::string& strPath)
 {
     // On Android, there are two situations for full path.

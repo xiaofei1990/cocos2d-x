@@ -45,7 +45,7 @@ class AssetsManagerDelegateProtocol;
  *  @js NA
  *  @lua NA
  */
-class AssetsManager
+class CC_DLL AssetsManager
 {
 public:
     enum ErrorCode
@@ -131,6 +131,11 @@ public:
      */
     void setDelegate(AssetsManagerDelegateProtocol *delegate);
     
+    /** @brief Register script handler, the hander will receive messages
+     */
+    void registerScriptHandler(int handler);
+    void unregisterScriptHandler(void);
+
     /** @brief Sets connection time out in seconds
      */
     void setConnectionTimeout(unsigned int timeout);
@@ -195,6 +200,7 @@ private:
     unsigned int _connectionTimeout;
     
     AssetsManagerDelegateProtocol *_delegate; // weak reference
+    int _scriptHandler; // script handler
 };
 
 class AssetsManagerDelegateProtocol

@@ -131,7 +131,7 @@ class CCEditBoxImpl;
  *  @js NA
  *  @lua NA
  */
-class CCEditBoxDelegate 
+class CC_DLL CCEditBoxDelegate 
 {
 public:
     virtual ~CCEditBoxDelegate() {};
@@ -171,7 +171,7 @@ public:
  * 
  */
  
-class CCEditBox
+class CC_DLL CCEditBox
 : public CCControlButton
 , public CCIMEDelegate
 {
@@ -352,6 +352,7 @@ public:
      * @param returnType One of the CCKeyboardReturnType constants.
      */
     void setReturnType(KeyboardReturnType returnType);
+    KeyboardReturnType getReturnType();
     
     /* override functions */
     virtual void setPosition(const CCPoint& pos);

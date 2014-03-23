@@ -31,11 +31,13 @@
 #include "ccMacros.h"
 #include "cocoa/CCAffineTransform.h"
 #include "cocoa/CCArray.h"
+#include "cocoa/CCEventDispatcher.h"
 #include "CCGL.h"
 #include "shaders/ccGLStateCache.h"
 #include "shaders/CCGLProgram.h"
 #include "kazmath/kazmath.h"
 #include "script_support/CCScriptSupport.h"
+#include "touch_dispatcher/CCTouchDelegateProtocol.h"
 #include "CCProtocols.h"
 
 NS_CC_BEGIN
@@ -45,13 +47,13 @@ class CCGridBase;
 class CCPoint;
 class CCTouch;
 class CCAction;
-class CCRGBAProtocol;
 class CCLabelProtocol;
 class CCScheduler;
 class CCActionManager;
 class CCComponent;
 class CCDictionary;
 class CCComponentContainer;
+class CCScene;
 
 /**
  * @addtogroup base_nodes
@@ -62,13 +64,12 @@ enum {
     kCCNodeTagInvalid = -1,
 };
 
-enum {
-    kCCNodeOnEnter,
-    kCCNodeOnExit,
-    kCCNodeOnEnterTransitionDidFinish,
-    kCCNodeOnExitTransitionDidStart,
-    kCCNodeOnCleanup
-};
+typedef enum {
+	kCCTouchesAllAtOnce,
+	kCCTouchesOneByOne,
+} ccTouchesMode;
+
+class CCTouchScriptHandlerEntry;
 
 /** @brief CCNode is the main element. Anything that gets drawn or contains things that get drawn is a CCNode.
  The most popular CCNodes are: CCScene, CCLayer, CCSprite, CCMenu.
@@ -125,7 +126,7 @@ enum {
  - Each node has a camera. By default it points to the center of the CCNode.
  */
 
-class CC_DLL CCNode : public CCObject
+class CC_DLL CCNode : public CCEventDispatcher, public CCTouchDelegate
 {
 public:
     /// @{
@@ -929,6 +930,8 @@ public:
      */
     void scheduleUpdateWithPriorityLua(int nHandler, int priority);
     
+    virtual void scheduleUpdateForNodeEvent();
+
     /// @}  end Script Bindings
 
 
@@ -1007,7 +1010,15 @@ public:
      * @return A "local" axis aligned boudning box of the node.
      * @js getBoundingBox
      */
-    CCRect boundingBox(void);
+    virtual CCRect boundingBox(void);
+
+    virtual const CCSize getTextureSize(void) { return m_obTextureSize; };
+
+    /**
+     * This boundingBox will calculate all children's boundingBox every time
+     */
+    virtual CCRect getCascadeBoundingBox(bool convertToWorld = true);
+    virtual void setCascadeBoundingBox(const CCRect &boundingBox);
 
     /// @{
     /// @name Actions
@@ -1382,6 +1393,137 @@ public:
     virtual void removeAllComponents();
     /// @} end of component functions
 
+    /// @{
+    /**
+     * Changes the color with R,G,B bytes
+     *
+     * @param color Example: ccc3(255,100,0) means R=255, G=100, B=0
+     */
+    virtual void setColor(const ccColor3B& color);
+
+    /**
+     * Returns color that is currently used.
+     *
+     * @return The ccColor3B contains R,G,B bytes.
+     */
+    virtual const ccColor3B& getColor(void);
+
+    /**
+     * Returns the displayed color.
+     *
+     * @return The ccColor3B contains R,G,B bytes.
+     */
+    virtual const ccColor3B& getDisplayedColor(void);
+
+    /**
+     * Returns the displayed opacity.
+     *
+     * @return  The opacity of sprite, from 0 ~ 255
+     */
+    virtual GLubyte getDisplayedOpacity(void);
+    /**
+     * Returns the opacity.
+     *
+     * The opacity which indicates how transparent or opaque this node is.
+     * 0 indicates fully transparent and 255 is fully opaque.
+     *
+     * @return  The opacity of sprite, from 0 ~ 255
+     */
+    virtual GLubyte getOpacity(void);
+
+    /**
+     * Changes the opacity.
+     *
+     * @param   value   Goes from 0 to 255, where 255 means fully opaque and 0 means fully transparent.
+     */
+    virtual void setOpacity(GLubyte opacity);
+
+    // optional
+
+    /**
+     * Changes the OpacityModifyRGB property.
+     * If thie property is set to true, then the rendered color will be affected by opacity.
+     * Normally, r = r * opacity/255, g = g * opacity/255, b = b * opacity/255.
+     *
+     * @param   bValue  true then the opacity will be applied as: glColor(R,G,B,opacity);
+     *                  false then the opacity will be applied as: glColor(opacity, opacity, opacity, opacity);
+     */
+    virtual void setOpacityModifyRGB(bool bValue);
+
+    /**
+     * Returns whether or not the opacity will be applied using glColor(R,G,B,opacity)
+     * or glColor(opacity, opacity, opacity, opacity)
+     *
+     * @return  Returns opacity modify flag.
+     */
+    virtual bool isOpacityModifyRGB(void);
+
+    /**
+     *  whether or not color should be propagated to its children.
+     */
+    virtual bool isCascadeColorEnabled(void);
+    virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
+
+    /**
+     *  recursive method that updates display color
+     */
+    virtual void updateDisplayedColor(const ccColor3B& color);
+
+    /**
+     *  whether or not opacity should be propagated to its children.
+     */
+    virtual bool isCascadeOpacityEnabled(void);
+    virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled);
+
+    /**
+     *  recursive method that updates the displayed opacity.
+     */
+    virtual void updateDisplayedOpacity(GLubyte opacity);
+    /// @}
+
+    /// @{
+
+    virtual CCScene *getScene();
+
+    virtual void registerWithTouchDispatcher(void);
+    virtual void unregisterWithTouchDispatcher(void);
+
+    /** Register script touch events handler */
+    virtual void registerScriptTouchHandler(int nHandler, bool bIsMultiTouches = false, int nPriority = INT_MIN, bool bSwallowsTouches = false);
+    /** Unregister script touch events handler */
+    virtual void unregisterScriptTouchHandler(void);
+
+    /** whether or not it will receive Touch events.
+     You can enable / disable touch events with this property.
+     Only the touches of this node will be affected. This "method" is not propagated to it's children.
+     @since v0.8.1
+     */
+    virtual bool isTouchEnabled();
+    virtual void setTouchEnabled(bool value);
+
+    virtual void setTouchMode(ccTouchesMode mode);
+    virtual int getTouchMode();
+
+    /** priority of the touch events. Default is 0 */
+    virtual void setTouchPriority(int priority);
+    virtual int getTouchPriority();
+
+    inline CCTouchScriptHandlerEntry* getScriptTouchHandlerEntry() { return m_pScriptTouchHandlerEntry; };
+
+    // default implements are used to call script callback if exist
+    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
+
+    // default implements are used to call script callback if exist
+    virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
+
+    /// @}
+
 private:
     /// lazy allocs
     void childrenAlloc(void);
@@ -1416,7 +1558,8 @@ protected:
     CCPoint m_obAnchorPoint;            ///< anchor point normalized (NOT in points)
     
     CCSize m_obContentSize;             ///< untransformed size of the node
-    
+    CCSize m_obTextureSize;
+    CCRect m_cascadeBoundingBox;
     
     CCAffineTransform m_sAdditionalTransform; ///< transform
     CCAffineTransform m_sTransform;     ///< transform
@@ -1464,66 +1607,27 @@ protected:
     
     CCComponentContainer *m_pComponentContainer;        ///< Dictionary of components
 
-};
+    GLubyte m_displayedOpacity;
+    GLubyte m_realOpacity;
+    bool m_isOpacityModifyRGB;
+    ccColor3B m_displayedColor;
+    ccColor3B m_realColor;
+    bool m_cascadeColorEnabled;
+    bool m_cascadeOpacityEnabled;
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
-//#pragma mark - CCNodeRGBA
-#endif
+    unsigned int m_drawOrder;
+    static unsigned int g_drawOrder;
 
-/** CCNodeRGBA is a subclass of CCNode that implements the CCRGBAProtocol protocol.
+    // touch events
+    bool m_bTouchEnabled;
+    int m_nTouchPriority;
+    ccTouchesMode m_eTouchMode;
+    CCTouchScriptHandlerEntry* m_pScriptTouchHandlerEntry;
  
- All features from CCNode are valid, plus the following new features:
- - opacity
- - RGB colors
+    virtual int excuteScriptTouchHandler(int nEventType, CCTouch *pTouch);
+    virtual int excuteScriptTouchHandler(int nEventType, CCSet *pTouches);
  
- Opacity/Color propagates into children that conform to the CCRGBAProtocol if cascadeOpacity/cascadeColor is enabled.
- @since v2.1
- */
-class CC_DLL CCNodeRGBA : public CCNode, public CCRGBAProtocol
-{
-public:
-    /**
-     *  @js ctor
-     */
-    CCNodeRGBA();
-    /**
-     *  @js NA
-     *  @lua NA
-     */
-    virtual ~CCNodeRGBA();
-    
-    virtual bool init();
-    
-    /**
-     * Allocates and initializes a nodergba.
-     * @return A initialized node which is marked as "autorelease".
-     */
-    static CCNodeRGBA * create(void);
-    
-    virtual GLubyte getOpacity();
-    virtual GLubyte getDisplayedOpacity();
-    virtual void setOpacity(GLubyte opacity);
-    virtual void updateDisplayedOpacity(GLubyte parentOpacity);
-    virtual bool isCascadeOpacityEnabled();
-    virtual void setCascadeOpacityEnabled(bool cascadeOpacityEnabled);
-    
-    virtual const ccColor3B& getColor(void);
-    virtual const ccColor3B& getDisplayedColor();
-    virtual void setColor(const ccColor3B& color);
-    virtual void updateDisplayedColor(const ccColor3B& parentColor);
-    virtual bool isCascadeColorEnabled();
-    virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
-    
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);};
-    virtual bool isOpacityModifyRGB() { return false; };
-
-protected:
-	GLubyte		_displayedOpacity;
-    GLubyte     _realOpacity;
-	ccColor3B	_displayedColor;
-    ccColor3B   _realColor;
-	bool		_cascadeColorEnabled;
-    bool        _cascadeOpacityEnabled;
+    friend class CCScene;
 };
 
 // end of base_node group

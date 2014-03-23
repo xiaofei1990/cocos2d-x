@@ -278,6 +278,14 @@ void CCEditBoxImplWin::openKeyboard()
 		m_pDelegate->editBoxEditingDidEnd(m_pEditBox);
 		m_pDelegate->editBoxReturn(m_pEditBox);
 	}
+
+    if (0 != pEditBox->getScriptEditBoxHandler())
+    {
+        cocos2d::CCScriptEngineProtocol* pEngine = cocos2d::CCScriptEngineManager::sharedManager()->getScriptEngine();
+        if (didChange) pEngine->executeEvent(pEditBox->getScriptEditBoxHandler(), "changed",pEditBox);
+        pEngine->executeEvent(pEditBox->getScriptEditBoxHandler(), "ended",pEditBox);
+        pEngine->executeEvent(pEditBox->getScriptEditBoxHandler(), "return",pEditBox);
+}
 }
 
 void CCEditBoxImplWin::closeKeyboard()
