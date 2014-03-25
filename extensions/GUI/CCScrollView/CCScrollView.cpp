@@ -537,6 +537,8 @@ void CCScrollView::afterDraw()
 
 void CCScrollView::visit()
 {
+    m_drawOrder = ++g_drawOrder;
+
 	// quick return if not visible
 	if (!isVisible())
     {
@@ -598,7 +600,7 @@ void CCScrollView::visit()
 	kmGLPopMatrix();
 }
 
-bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
+int CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
     if (!this->isVisible())
     {
@@ -639,11 +641,11 @@ bool CCScrollView::ccTouchBegan(CCTouch* touch, CCEvent* event)
     return true;
 }
 
-void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
+int CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
 {
     if (!this->isVisible())
     {
-        return;
+        return kCCTouchMoved;
     }
 
     if (m_pTouches->containsObject(touch))
@@ -676,7 +678,7 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
             if (!m_bTouchMoved && fabs(convertDistanceFromPointToInch(dis)) < MOVE_INCH )
             {
                 //CCLOG("Invalid movement, distance = [%f, %f], disInch = %f", moveDistance.x, moveDistance.y);
-                return;
+                return kCCTouchMoved;
             }
             
             if (!m_bTouchMoved)
@@ -718,6 +720,8 @@ void CCScrollView::ccTouchMoved(CCTouch* touch, CCEvent* event)
             this->setZoomScale(this->getZoomScale()*len/m_fTouchLength);
         }
     }
+
+    return kCCTouchMoved;
 }
 
 void CCScrollView::ccTouchEnded(CCTouch* touch, CCEvent* event)
