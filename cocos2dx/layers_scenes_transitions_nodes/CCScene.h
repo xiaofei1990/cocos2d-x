@@ -66,18 +66,19 @@ public:
     void removeTouchableNode(CCNode *node);
 
     // default implements are used to call script callback if exist
-    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual int ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual int ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
 
     virtual void visit();
+    virtual void registerWithTouchDispatcher();
 
 protected:
     CCArray *m_touchableNodes;
-    CCNode *m_touchNode;
+    CCArray *m_touchTargets;
 
-    void sortAllTouchableNodes();
+    void sortAllTouchableNodes(CCArray *nodes);
 };
 
 // end of scene group

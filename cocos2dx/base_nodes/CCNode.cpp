@@ -159,6 +159,10 @@ CCNode::~CCNode(void)
 
     // children
     CC_SAFE_RELEASE(m_pChildren);
+
+    // m_pComsContainer
+    m_pComponentContainer->removeAll();
+    CC_SAFE_DELETE(m_pComponentContainer);
 }
 
 bool CCNode::init()
@@ -1686,29 +1690,29 @@ int CCNode::getTouchMode()
 }
 
 
-bool CCNode::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
+int CCNode::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
 {
     if (kScriptTypeNone != m_eScriptType)
     {
-        return excuteScriptTouchHandler(CCTOUCHBEGAN, pTouch) == 0 ? false : true;
+        return excuteScriptTouchHandler(CCTOUCHBEGAN, pTouch);
 }
 
     CC_UNUSED_PARAM(pTouch);
     CC_UNUSED_PARAM(pEvent);
     CCAssert(false, "Layer#ccTouchBegan override me");
-    return true;
+    return kCCTouchBegan;
 }
 
-void CCNode::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
+int CCNode::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
 {
     if (kScriptTypeNone != m_eScriptType)
     {
-        excuteScriptTouchHandler(CCTOUCHMOVED, pTouch);
-        return;
+        return excuteScriptTouchHandler(CCTOUCHMOVED, pTouch);
     }
 
     CC_UNUSED_PARAM(pTouch);
     CC_UNUSED_PARAM(pEvent);
+    return kCCTouchMoved;
 }
 
 void CCNode::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)

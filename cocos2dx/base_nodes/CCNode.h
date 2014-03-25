@@ -69,6 +69,17 @@ typedef enum {
 	kCCTouchesOneByOne,
 } ccTouchesMode;
 
+#define kCCTouchIgnore              0
+
+#define kCCTouchBegan               1
+#define kCCTouchBeganSwallows       kCCTouchBegan
+#define kCCTouchBeganNoSwallows     2
+
+#define kCCTouchMoved               1
+#define kCCTouchMovedSwallows       kCCTouchMoved
+#define kCCTouchMovedNoSwallows     0
+#define kCCTouchMovedReleaseOthers  2
+
 class CCTouchScriptHandlerEntry;
 
 /** @brief CCNode is the main element. Anything that gets drawn or contains things that get drawn is a CCNode.
@@ -1511,8 +1522,8 @@ public:
     inline CCTouchScriptHandlerEntry* getScriptTouchHandlerEntry() { return m_pScriptTouchHandlerEntry; };
 
     // default implements are used to call script callback if exist
-    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
+    virtual int ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
+    virtual int ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
 

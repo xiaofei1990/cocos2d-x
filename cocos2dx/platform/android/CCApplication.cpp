@@ -67,10 +67,20 @@ ccLanguageType CCApplication::getCurrentLanguage()
     const char* pLanguageName = languageName.c_str();
     ccLanguageType ret = kLanguageEnglish;
 
-    if (0 == strcmp("zh", pLanguageName))
+	// modify by guorui.chen
+	// added current language is simple or traditional
+    // if (0 == strcmp("zh", pLanguageName))
+    // {
+    //     ret = kLanguageChinese;
+    // }
+    if (0 == strcmp("zh-Hans", pLanguageName))
     {
         ret = kLanguageChinese;
     }
+	else if (0 == strcmp("zh-Hant", pLanguageName))
+	{
+		ret = kLanguageChinese_tw;
+	}
     else if (0 == strcmp("en", pLanguageName))
     {
         ret = kLanguageEnglish;

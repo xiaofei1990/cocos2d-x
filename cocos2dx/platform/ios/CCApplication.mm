@@ -83,6 +83,12 @@ ccLanguageType CCApplication::getCurrentLanguage()
     ccLanguageType ret = kLanguageEnglish;
     if ([languageCode isEqualToString:@"zh"])
     {
+        // modify by guorui.chen
+        // check current language is simple or traditional
+        NSString * scriptCode = [temp objectForKey:NSLocaleScriptCode];
+        if ([scriptCode isEqualToString:@"Hant"])
+            ret = kLanguageChinese_tw;
+        else
         ret = kLanguageChinese;
     }
     else if ([languageCode isEqualToString:@"en"])
