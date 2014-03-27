@@ -291,6 +291,11 @@
 		1AC6CE8816B910CD00330EFD /* CCFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AC6CE8616B910CD00330EFD /* CCFileUtils.cpp */; };
 		1AC6CE8916B910CD00330EFD /* CCFileUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AC6CE8716B910CD00330EFD /* CCFileUtils.h */; };
 		2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2628297915EC7064002C4240 /* ccTypeInfo.h */; };
+		2E7338B018E42DDD001753C6 /* CCPointArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E7338AE18E42DDD001753C6 /* CCPointArray.cpp */; };
+		2E7338B118E42DDD001753C6 /* CCPointArray.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E7338AF18E42DDD001753C6 /* CCPointArray.h */; };
+		2E7338B418E42E15001753C6 /* ioapi_mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E7338B218E42E15001753C6 /* ioapi_mem.cpp */; };
+		2E7338B518E42E15001753C6 /* ioapi_mem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E7338B318E42E15001753C6 /* ioapi_mem.h */; };
+		2E7338B718E42E37001753C6 /* CCCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E7338B618E42E37001753C6 /* CCCommon.cpp */; };
 		37EEEBF8175DDF3A003C1193 /* CCComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37EEEBF4175DDF3A003C1193 /* CCComponent.cpp */; };
 		37EEEBF9175DDF3A003C1193 /* CCComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 37EEEBF5175DDF3A003C1193 /* CCComponent.h */; };
 		37EEEBFA175DDF3A003C1193 /* CCComponentContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37EEEBF6175DDF3A003C1193 /* CCComponentContainer.cpp */; };
@@ -606,6 +611,11 @@
 		1AC6CE8616B910CD00330EFD /* CCFileUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCFileUtils.cpp; sourceTree = "<group>"; };
 		1AC6CE8716B910CD00330EFD /* CCFileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFileUtils.h; sourceTree = "<group>"; };
 		2628297915EC7064002C4240 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
+		2E7338AE18E42DDD001753C6 /* CCPointArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCPointArray.cpp; sourceTree = "<group>"; };
+		2E7338AF18E42DDD001753C6 /* CCPointArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPointArray.h; sourceTree = "<group>"; };
+		2E7338B218E42E15001753C6 /* ioapi_mem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ioapi_mem.cpp; sourceTree = "<group>"; };
+		2E7338B318E42E15001753C6 /* ioapi_mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi_mem.h; sourceTree = "<group>"; };
+		2E7338B618E42E37001753C6 /* CCCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCCommon.cpp; sourceTree = "<group>"; };
 		37EEEBF4175DDF3A003C1193 /* CCComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCComponent.cpp; sourceTree = "<group>"; };
 		37EEEBF5175DDF3A003C1193 /* CCComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCComponent.h; sourceTree = "<group>"; };
 		37EEEBF6175DDF3A003C1193 /* CCComponentContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCComponentContainer.cpp; sourceTree = "<group>"; };
@@ -781,6 +791,8 @@
 				1551A38C158F2ADE00E66CFE /* CCNS.h */,
 				1551A38D158F2ADE00E66CFE /* CCObject.cpp */,
 				1551A38E158F2ADE00E66CFE /* CCObject.h */,
+				2E7338AE18E42DDD001753C6 /* CCPointArray.cpp */,
+				2E7338AF18E42DDD001753C6 /* CCPointArray.h */,
 				1551A38F158F2ADE00E66CFE /* CCSet.cpp */,
 				1551A390158F2ADE00E66CFE /* CCSet.h */,
 				1551A391158F2ADE00E66CFE /* CCString.cpp */,
@@ -979,6 +991,7 @@
 			children = (
 				1551A46C158F2ADE00E66CFE /* CCAccelerometerDelegate.h */,
 				1551A46D158F2ADE00E66CFE /* CCApplicationProtocol.h */,
+				2E7338B618E42E37001753C6 /* CCCommon.cpp */,
 				1551A46E158F2ADE00E66CFE /* CCCommon.h */,
 				1AA6226116CF6BDF0028C05E /* CCDevice.h */,
 				1551A46F158F2ADE00E66CFE /* CCEGLViewProtocol.cpp */,
@@ -1155,6 +1168,8 @@
 			children = (
 				1551A5FF158F2ADE00E66CFE /* ioapi.cpp */,
 				1551A600158F2ADE00E66CFE /* ioapi.h */,
+				2E7338B218E42E15001753C6 /* ioapi_mem.cpp */,
+				2E7338B318E42E15001753C6 /* ioapi_mem.h */,
 				1551A601158F2ADE00E66CFE /* unzip.cpp */,
 				1551A602158F2ADE00E66CFE /* unzip.h */,
 				1551A603158F2ADE00E66CFE /* ZipUtils.cpp */,
@@ -1305,6 +1320,7 @@
 				1551A62D158F2ADE00E66CFE /* CCActionCatmullRom.h in Headers */,
 				1551A62F158F2ADE00E66CFE /* CCActionEase.h in Headers */,
 				1551A631158F2ADE00E66CFE /* CCActionGrid.h in Headers */,
+				2E7338B118E42DDD001753C6 /* CCPointArray.h in Headers */,
 				1551A633158F2ADE00E66CFE /* CCActionGrid3D.h in Headers */,
 				1551A635158F2ADE00E66CFE /* CCActionInstant.h in Headers */,
 				1551A637158F2ADE00E66CFE /* CCActionInterval.h in Headers */,
@@ -1348,6 +1364,7 @@
 				1551A6BF158F2ADE00E66CFE /* plane.h in Headers */,
 				1551A6C0158F2ADE00E66CFE /* quaternion.h in Headers */,
 				1551A6C1158F2ADE00E66CFE /* ray2.h in Headers */,
+				2E7338B518E42E15001753C6 /* ioapi_mem.h in Headers */,
 				1551A6C2158F2ADE00E66CFE /* utility.h in Headers */,
 				1551A6C3158F2ADE00E66CFE /* vec2.h in Headers */,
 				1551A6C4158F2ADE00E66CFE /* vec3.h in Headers */,
@@ -1533,6 +1550,7 @@
 				1551A62E158F2ADE00E66CFE /* CCActionEase.cpp in Sources */,
 				1551A630158F2ADE00E66CFE /* CCActionGrid.cpp in Sources */,
 				1551A632158F2ADE00E66CFE /* CCActionGrid3D.cpp in Sources */,
+				2E7338B718E42E37001753C6 /* CCCommon.cpp in Sources */,
 				1551A634158F2ADE00E66CFE /* CCActionInstant.cpp in Sources */,
 				1551A636158F2ADE00E66CFE /* CCActionInterval.cpp in Sources */,
 				1551A638158F2ADE00E66CFE /* CCActionManager.cpp in Sources */,
@@ -1619,6 +1637,7 @@
 				1551A836158F2ADF00E66CFE /* CCSpriteFrame.cpp in Sources */,
 				1551A838158F2ADF00E66CFE /* CCSpriteFrameCache.cpp in Sources */,
 				1551A83A158F2ADF00E66CFE /* base64.cpp in Sources */,
+				2E7338B018E42DDD001753C6 /* CCPointArray.cpp in Sources */,
 				1551A83C158F2ADF00E66CFE /* CCPointExtension.cpp in Sources */,
 				1551A83E158F2ADF00E66CFE /* CCProfiling.cpp in Sources */,
 				1551A842158F2ADF00E66CFE /* ccUtils.cpp in Sources */,
@@ -1628,6 +1647,7 @@
 				1551A84C158F2ADF00E66CFE /* TransformUtils.cpp in Sources */,
 				1551A84E158F2ADF00E66CFE /* ioapi.cpp in Sources */,
 				1551A850158F2ADF00E66CFE /* unzip.cpp in Sources */,
+				2E7338B418E42E15001753C6 /* ioapi_mem.cpp in Sources */,
 				1551A852158F2ADF00E66CFE /* ZipUtils.cpp in Sources */,
 				1551A855158F2ADF00E66CFE /* CCIMEDispatcher.cpp in Sources */,
 				1551A857158F2ADF00E66CFE /* CCTextFieldTTF.cpp in Sources */,
