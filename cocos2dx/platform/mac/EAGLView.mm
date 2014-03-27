@@ -37,7 +37,7 @@ THE SOFTWARE.
 #import "CCTouch.h"
 #import "CCIMEDispatcher.h"
 #import "CCWindow.h"
-#import "CCEventDispatcher.h"
+#import "CCEventDispatcherMac.h"
 #import "CCEGLView.h"
 
 
@@ -47,6 +47,13 @@ static EAGLView *view;
 @implementation EAGLView
 
 @synthesize eventDelegate = eventDelegate_, isFullScreen = isFullScreen_, frameZoomFactor=frameZoomFactor_;
+
+- (NSSize)makeSizeEven:(NSSize)size
+{
+    size.width = (int)(size.width / 2) * 2;
+    size.height = (int)(size.height / 2) * 2;
+    return size;
+}
 
 +(id) sharedEGLView
 {
@@ -67,57 +74,47 @@ static EAGLView *view;
 //		NSOpenGLPFANoRecovery,
 		NSOpenGLPFADoubleBuffer,
 		NSOpenGLPFADepthSize, 24,
-		
 		0
     };
+    frameRect.size = [self makeSizeEven:frameRect.size];
 	
-	NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
-	
+	NSOpenGLPixelFormat *pixelFormat = [[[NSOpenGLPixelFormat alloc] initWithAttributes:attribs] autorelease];
 	if (!pixelFormat)
+    {
 		NSLog(@"No OpenGL pixel format");
-	
-	if( (self = [super initWithFrame:frameRect pixelFormat:[pixelFormat autorelease]]) ) {
-		
-		if( context )
-			[self setOpenGLContext:context];
-
-		// event delegate
-		eventDelegate_ = [CCEventDispatcher sharedDispatcher];
+	}
+	else if ((self = [super initWithFrame:frameRect pixelFormat:pixelFormat]))
+    {
+		if(context) [self setOpenGLContext:context];
+		eventDelegate_ = [CCEventDispatcherMac sharedDispatcher];
 	}
     
     cocos2d::CCEGLView::sharedOpenGLView()->setFrameSize(frameRect.size.width, frameRect.size.height);
-    
     frameZoomFactor_ = 1.0f;
+    originalWinRect_ = frameRect;
 	
 	view = self;
 	return self;
 }
 
-- (id) initWithFrame:(NSRect)frameRect pixelFormat:(NSOpenGLPixelFormat *)format{
-    // event delegate
-    eventDelegate_ = [CCEventDispatcher sharedDispatcher];
+- (id) initWithFrame:(NSRect)frameRect pixelFormat:(NSOpenGLPixelFormat *)format
+{
+    frameRect.size = [self makeSizeEven:frameRect.size];
+    if ((self = [super initWithFrame:frameRect pixelFormat:format]))
+    {
+        eventDelegate_ = [CCEventDispatcherMac sharedDispatcher];
+    }
     
     cocos2d::CCEGLView::sharedOpenGLView()->setFrameSize(frameRect.size.width, frameRect.size.height);
-    
     frameZoomFactor_ = 1.0f;
+    originalWinRect_ = frameRect;
 	
 	view = self;
-    
-    [super initWithFrame:frameRect pixelFormat:format];
-
     return self;
-}
-
-- (void) update
-{
-	// XXX: Should I do something here ?
-	[super update];
 }
 
 - (void) prepareOpenGL
 {
-	// XXX: Initialize OpenGL context
-
 	[super prepareOpenGL];
 	
 	// Make this openGL context current to the thread
@@ -148,9 +145,13 @@ static EAGLView *view;
     float diffX = winRect.size.width - viewRect.size.width;
     float diffY = winRect.size.height - viewRect.size.height;
     
+    // new opengl frame width and height
+    NSSize frameSize = NSMakeSize(originalWinRect_.size.width * frameZoomFactor, originalWinRect_.size.height * frameZoomFactor);
+    frameSize = [self makeSizeEven:frameSize];
+
     // new window width and height
-    float newWindowWidth = (int)(viewRect.size.width * frameZoomFactor + diffX);
-    float newWindowHeight = (int)(viewRect.size.height * frameZoomFactor + diffY);
+    int newWindowWidth = frameSize.width + diffX;
+    int newWindowHeight = frameSize.height + diffY;
     
     // display window in the center of the screen
     NSRect screenRect = [[NSScreen mainScreen] frame];
@@ -158,6 +159,7 @@ static EAGLView *view;
     float originY = (screenRect.size.height - newWindowHeight) / 2;
     
     [[self window] setFrame:NSMakeRect(originX, originY, newWindowWidth, newWindowHeight) display:true];
+    [self setFrameSize:NSMakeSize(frameSize.width, frameSize.height)];
 }
 
 - (void) reshape
@@ -165,19 +167,14 @@ static EAGLView *view;
 	// We draw on a secondary thread through the display link
 	// When resizing the view, -reshape is called automatically on the main thread
 	// Add a mutex around to avoid the threads accessing the context simultaneously when resizing
-
 	[self lockOpenGLContext];
 	
-//	NSRect rect = [self bounds];
-	
-	cocos2d::CCDirector *director = cocos2d::CCDirector::sharedDirector();
-//	CGSize size = NSSizeToCGSize(rect.size);
-//	cocos2d::CCSize ccsize = cocos2d::CCSizeMake(size.width, size.height);
-	//director->reshapeProjection(ccsize);
+    // resize gl view
+    glViewport(0, 0, self.frame.size.width, self.frame.size.height);
 	
 	// avoid flicker
+	cocos2d::CCDirector *director = cocos2d::CCDirector::sharedDirector();
 	director->drawScene();
-//	[self setNeedsDisplay:YES];
 	
 	[self unlockOpenGLContext];
 }
@@ -186,7 +183,6 @@ static EAGLView *view;
 {
 	NSOpenGLContext *glContext = [self openGLContext];
 	NSAssert( glContext, @"FATAL: could not get openGL context");
-
 	[glContext makeCurrentContext];
 	CGLLockContext((CGLContextObj)[glContext CGLContextObj]);
 }
@@ -195,14 +191,14 @@ static EAGLView *view;
 {
 	NSOpenGLContext *glContext = [self openGLContext];
 	NSAssert( glContext, @"FATAL: could not get openGL context");
-
 	CGLUnlockContext((CGLContextObj)[glContext CGLContextObj]);
 }
 
 - (void) dealloc
 {
-	CCLOGINFO(@"cocos2d: deallocing EAGLView %@", self);
+	NSLog(@"deallocing EAGLView %@", self);
 	[super dealloc];
+    view = nil;
 }
 	
 -(int) getWidth
@@ -331,7 +327,7 @@ static EAGLView *view;
     float xs[1] = {0.0f};
     float ys[1] = {0.0f};
     
-	ids[0] = [theEvent eventNumber];
+	ids[0] = (int)[theEvent eventNumber];
 	xs[0] = x / frameZoomFactor_;
 	ys[0] = y / frameZoomFactor_;
 
@@ -355,7 +351,7 @@ static EAGLView *view;
     float xs[1] = {0.0f};
     float ys[1] = {0.0f};
     
-	ids[0] = [theEvent eventNumber];
+	ids[0] = (int)[theEvent eventNumber];
 	xs[0] = x / frameZoomFactor_;
 	ys[0] = y / frameZoomFactor_;
 
@@ -374,7 +370,7 @@ static EAGLView *view;
     float xs[1] = {0.0f};
     float ys[1] = {0.0f};
     
-	ids[0] = [theEvent eventNumber];
+	ids[0] = (int)[theEvent eventNumber];
 	xs[0] = x / frameZoomFactor_;
 	ys[0] = y / frameZoomFactor_;
 
@@ -486,4 +482,5 @@ static EAGLView *view;
 {
 	DISPATCH_EVENT(theEvent, _cmd);
 }
+
 @end

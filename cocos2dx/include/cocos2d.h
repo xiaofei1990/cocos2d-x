@@ -71,10 +71,12 @@ THE SOFTWARE.
 #include "cocoa/CCString.h"
 #include "cocoa/CCNS.h"
 #include "cocoa/CCZone.h"
+#include "cocoa/CCPointArray.h"
 
 // draw nodes
 #include "draw_nodes/CCDrawingPrimitives.h"
 #include "draw_nodes/CCDrawNode.h"
+#include "draw_nodes/CCShapeNode.h"
 
 // effects
 #include "effects/CCGrabber.h"
@@ -113,6 +115,7 @@ THE SOFTWARE.
 
 // misc_nodes
 #include "misc_nodes/CCClippingNode.h"
+#include "misc_nodes/CCClippingRegionNode.h"
 #include "misc_nodes/CCMotionStreak.h"
 #include "misc_nodes/CCProgressTimer.h"
 #include "misc_nodes/CCRenderTexture.h"

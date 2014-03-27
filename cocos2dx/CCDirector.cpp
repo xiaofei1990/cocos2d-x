@@ -102,7 +102,7 @@ CCDirector* CCDirector::sharedDirector(void)
 
 CCDirector::CCDirector(void)
 {
-
+    CCLOG("alloc CCDirector %p", this);
 }
 
 bool CCDirector::init(void)
@@ -167,7 +167,7 @@ bool CCDirector::init(void)
     
 CCDirector::~CCDirector(void)
 {
-    CCLOG("cocos2d: deallocing CCDirector %p", this);
+    CCLOG("deallocing CCDirector %p", this);
 
     CC_SAFE_RELEASE(m_pFPSLabel);
     CC_SAFE_RELEASE(m_pSPFLabel);
@@ -307,7 +307,7 @@ void CCDirector::calculateDeltaTime(void)
 
     if (CCTime::gettimeofdayCocos2d(&now, NULL) != 0)
     {
-        CCLOG("error in gettimeofday");
+        CCLOG("CCDirector: error in gettimeofday");
         m_fDeltaTime = 0;
         return;
     }
@@ -445,7 +445,7 @@ void CCDirector::setProjection(ccDirectorProjection kProjection)
         break;
             
     default:
-        CCLOG("cocos2d: Director: unrecognized projection");
+        CCLOG("CCDirector: unrecognized projection");
         break;
     }
 
@@ -812,7 +812,7 @@ void CCDirector::resume(void)
 
     if (CCTime::gettimeofdayCocos2d(m_pLastUpdate, NULL) != 0)
     {
-        CCLOG("cocos2d: Director: Error in gettimeofday");
+        CCLOG("CCDirector: Error in gettimeofday");
     }
 
     m_bPaused = false;
@@ -914,7 +914,7 @@ void CCDirector::createStatsLabel()
      Secondly, the size of this image is 480*320, to display the FPS label with correct size, 
      a factor of design resolution ratio of 480x320 is also needed.
      */
-    float factor = CCEGLView::sharedOpenGLView()->getDesignResolutionSize().height / 320.0f;
+    float factor = 1.0f; // CCEGLView::sharedOpenGLView()->getDesignResolutionSize().height / 320.0f;
 
     m_pFPSLabel = new CCLabelAtlas();
     m_pFPSLabel->setIgnoreContentScaleFactor(true);

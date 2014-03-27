@@ -317,6 +317,7 @@ void CCSprite::setTextureRect(const CCRect& rect, bool rotated, const CCSize& un
     m_bRectRotated = rotated;
 
     setContentSize(untrimmedSize);
+    m_obTextureSize = untrimmedSize;
     setVertexRect(rect);
     setTextureCoords(rect);
 
@@ -967,6 +968,7 @@ void CCSprite::updateDisplayedOpacity(GLubyte opacity)
 
 void CCSprite::setDisplayFrame(CCSpriteFrame *pNewFrame)
 {
+    CCAssert(pNewFrame != NULL, "CCSprite::setDisplayFrame() - Invalid frame");
     m_obUnflippedOffsetPositionFromCenter = pNewFrame->getOffset();
 
     CCTexture2D *pNewTexture = pNewFrame->getTexture();
@@ -1117,6 +1119,12 @@ void CCSprite::setTexture(CCTexture2D *texture)
         CC_SAFE_RETAIN(texture);
         CC_SAFE_RELEASE(m_pobTexture);
         m_pobTexture = texture;
+        // fix the issure that an untextured sprite can not call setTexture.
+        if (m_obRect.equals(CCRectZero))
+        {
+            CCSize size = m_pobTexture->getContentSize();
+            setTextureRect(CCRectMake(0,0,size.width,size.height));
+        }
         updateBlendFunc();
     }
 }

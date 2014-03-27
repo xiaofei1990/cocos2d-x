@@ -217,7 +217,7 @@ public:
      @param nAction kCCNodeOnEnter,kCCNodeOnExit,kCCMenuItemActivated,kCCNodeOnEnterTransitionDidFinish,kCCNodeOnExitTransitionDidStart
      @return The integer value returned from the script function.
      */
-    virtual int executeNodeEvent(CCNode* pNode, int nAction) = 0;
+    virtual int executeNodeEvent(CCNode* pNode, int nAction, float dt = 0) = 0;
     
     virtual int executeMenuItemEvent(CCMenuItem* pMenuItem) = 0;
     /** Execute a notification event function */
