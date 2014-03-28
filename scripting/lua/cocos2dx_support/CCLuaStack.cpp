@@ -31,8 +31,13 @@ extern "C" {
 #include "lauxlib.h"
 #include "tolua_fix.h"
 #include "snapshot.h"
+}
+
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
+extern "C" {
 #include "xxtea.h"
 }
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
 
 #include "ccMacros.h"
 #include "platform/CCZipFile.h"
@@ -93,8 +98,10 @@ CCLuaStack::~CCLuaStack(void)
 {
     s_map.erase(s_map.find(m_state));
     lua_close(m_state);
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
     if (m_xxteaKey) free(m_xxteaKey);
     if (m_xxteaSign) free(m_xxteaSign);
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
 }
 
 bool CCLuaStack::init(void)
@@ -390,6 +397,17 @@ int CCLuaStack::loadChunksFromZIP(const char *zipFilePath)
     return ret;
 }
 
+bool CCLuaStack::handleAssert(const char *msg)
+{
+    if (m_callFromLua == 0) return false;
+    
+    lua_pushfstring(m_state, "ASSERT FAILED ON LUA EXECUTE: %s", msg ? msg : "unknown");
+    lua_error(m_state);
+    return true;
+}
+
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
+
 void CCLuaStack::setXXTEAKeyAndSign(const char *key, int keyLen)
 {
     setXXTEAKeyAndSign(key, keyLen, kCCLuaEncryptXXTEADefaultSign, kCCLuaEncryptXXTEADefaultSignLen);
@@ -428,14 +446,7 @@ void CCLuaStack::setXXTEAKeyAndSign(const char *key, int keyLen, const char *sig
     }
 }
 
-bool CCLuaStack::handleAssert(const char *msg)
-{
-    if (m_callFromLua == 0) return false;
-
-    lua_pushfstring(m_state, "ASSERT FAILED ON LUA EXECUTE: %s", msg ? msg : "unknown");
-    lua_error(m_state);
-    return true;
-}
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
 
 int CCLuaStack::reallocateScriptHandler(int nHandler)
 {
@@ -601,8 +612,10 @@ int CCLuaStack::lua_loadChunksFromZIP(lua_State *L)
         void *buffer = NULL;
         unsigned char *zipFileData = utils->getFileData(zipFilePath.c_str(), "rb", &size);
         CCZipFile *zip = NULL;
-
-        bool isXXTEA = stack && stack->m_xxteaEnabled;
+        
+        bool isXXTEA = false;
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
+        isXXTEA = stack && stack->m_xxteaEnabled;
         for (unsigned int i = 0; isXXTEA && i < stack->m_xxteaSignLen && i < size; ++i)
         {
             isXXTEA = zipFileData[i] == stack->m_xxteaSign[i];
@@ -622,6 +635,8 @@ int CCLuaStack::lua_loadChunksFromZIP(lua_State *L)
             zip = CCZipFile::createWithBuffer(buffer, len);
         }
         else
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
+
         {
             zip = CCZipFile::createWithBuffer(zipFileData, size);
         }
@@ -676,6 +691,7 @@ int CCLuaStack::lua_loadbuffer(lua_State *L, const char *chunk, int chunkSize, c
 {
     CCLuaStack *stack = CCLuaStack::stack(L);
     int r = 0;
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
     if (stack && stack->m_xxteaEnabled && strncmp(chunk, stack->m_xxteaSign, stack->m_xxteaSignLen) == 0)
     {
         // decrypt XXTEA
@@ -689,6 +705,7 @@ int CCLuaStack::lua_loadbuffer(lua_State *L, const char *chunk, int chunkSize, c
         free(result);
     }
     else
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
     {
         r = luaL_loadbuffer(L, chunk, chunkSize, chunkName);
     }

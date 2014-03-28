@@ -25,7 +25,7 @@
 #include "CCLuaEngine.h"
 #include "cocos2d.h"
 #include "cocoa/CCArray.h"
-#include "cocoa/CCEventDispatcher.h"
+//#include "cocoa/CCEventDispatcher.h"
 #include "CCScheduler.h"
 #include "cocos-ext.h"
 

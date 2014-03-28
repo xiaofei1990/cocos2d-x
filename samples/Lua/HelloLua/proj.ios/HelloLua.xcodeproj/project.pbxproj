@@ -39,6 +39,7 @@
 		298B2A7318D0673800C1920F /* SliderReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 298B2A6018D0673800C1920F /* SliderReader.cpp */; };
 		298B2A7418D0673800C1920F /* TextFieldReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 298B2A6318D0673800C1920F /* TextFieldReader.cpp */; };
 		298B2A7518D0673800C1920F /* WidgetReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 298B2A6518D0673800C1920F /* WidgetReader.cpp */; };
+		2ED60C3218E522620025D6A3 /* snapshot.c in Sources */ = {isa = PBXBuildFile; fileRef = 2ED60C3018E522620025D6A3 /* snapshot.c */; };
 		375BD4A6186840A30024609E /* ObjectFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 375BD49E186840A30024609E /* ObjectFactory.cpp */; };
 		375BD4A7186840A30024609E /* TriggerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 375BD4A0186840A30024609E /* TriggerBase.cpp */; };
 		375BD4A8186840A30024609E /* TriggerMng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 375BD4A2186840A30024609E /* TriggerMng.cpp */; };
@@ -313,6 +314,8 @@
 		298B2A6518D0673800C1920F /* WidgetReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WidgetReader.cpp; sourceTree = "<group>"; };
 		298B2A6618D0673800C1920F /* WidgetReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WidgetReader.h; sourceTree = "<group>"; };
 		298B2A6718D0673800C1920F /* WidgetReaderProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WidgetReaderProtocol.h; sourceTree = "<group>"; };
+		2ED60C3018E522620025D6A3 /* snapshot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = snapshot.c; sourceTree = "<group>"; };
+		2ED60C3118E522620025D6A3 /* snapshot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = snapshot.h; sourceTree = "<group>"; };
 		373B910C18788E3A00198F86 /* CCComBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCComBase.h; sourceTree = "<group>"; };
 		375BD49E186840A30024609E /* ObjectFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjectFactory.cpp; sourceTree = "<group>"; };
 		375BD49F186840A30024609E /* ObjectFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectFactory.h; sourceTree = "<group>"; };
@@ -731,15 +734,6 @@
 		15A3DBC81682FC3C002FB0C5 /* cocos2dx_support */ = {
 			isa = PBXGroup;
 			children = (
-				15CA8CEB186966CF000032AB /* lua_cocos2dx_manual.cpp */,
-				15CA8CEC186966CF000032AB /* lua_cocos2dx_manual.h */,
-				1515AC251847277400E1CD27 /* lua_cocos2dx_cocostudio_manual.cpp */,
-				1515AC261847277400E1CD27 /* lua_cocos2dx_cocostudio_manual.h */,
-				1515AC271847277400E1CD27 /* LuaCocoStudio.cpp */,
-				1515AC281847277400E1CD27 /* LuaCocoStudio.h */,
-				150E36F217F27AB60021A6EA /* lua_cocos2dx_extensions_manual.cpp */,
-				150E36F317F27AB60021A6EA /* lua_cocos2dx_extensions_manual.h */,
-				46C1007216BF62DA00F74D54 /* platform */,
 				46C1005816BF5A2C00F74D54 /* CCLuaBridge.cpp */,
 				46C1005916BF5A2C00F74D54 /* CCLuaBridge.h */,
 				46C1005A16BF5A2C00F74D54 /* CCLuaEngine.cpp */,
@@ -750,8 +744,19 @@
 				46C1005F16BF5A2C00F74D54 /* CCLuaValue.h */,
 				46C1006016BF5A2C00F74D54 /* Cocos2dxLuaLoader.cpp */,
 				46C1006116BF5A2C00F74D54 /* Cocos2dxLuaLoader.h */,
+				1515AC251847277400E1CD27 /* lua_cocos2dx_cocostudio_manual.cpp */,
+				1515AC261847277400E1CD27 /* lua_cocos2dx_cocostudio_manual.h */,
+				150E36F217F27AB60021A6EA /* lua_cocos2dx_extensions_manual.cpp */,
+				150E36F317F27AB60021A6EA /* lua_cocos2dx_extensions_manual.h */,
+				15CA8CEB186966CF000032AB /* lua_cocos2dx_manual.cpp */,
+				15CA8CEC186966CF000032AB /* lua_cocos2dx_manual.h */,
 				46C1006216BF5A2C00F74D54 /* LuaCocos2d.cpp */,
 				46C1006316BF5A2C00F74D54 /* LuaCocos2d.h */,
+				1515AC271847277400E1CD27 /* LuaCocoStudio.cpp */,
+				1515AC281847277400E1CD27 /* LuaCocoStudio.h */,
+				46C1007216BF62DA00F74D54 /* platform */,
+				2ED60C3018E522620025D6A3 /* snapshot.c */,
+				2ED60C3118E522620025D6A3 /* snapshot.h */,
 				46C1006816BF5A2C00F74D54 /* tolua_fix.c */,
 				46C1006916BF5A2C00F74D54 /* tolua_fix.h */,
 			);
@@ -1766,6 +1771,7 @@
 				46C1006E16BF5A2C00F74D54 /* Cocos2dxLuaLoader.cpp in Sources */,
 				298B2A7418D0673800C1920F /* TextFieldReader.cpp in Sources */,
 				46C1006F16BF5A2C00F74D54 /* LuaCocos2d.cpp in Sources */,
+				2ED60C3218E522620025D6A3 /* snapshot.c in Sources */,
 				46C1007116BF5A2C00F74D54 /* tolua_fix.c in Sources */,
 				ED53143E183311CE008CD8A5 /* CCSpriteFrameCacheHelper.cpp in Sources */,
 				ED531433183311CE008CD8A5 /* CCBone.cpp in Sources */,

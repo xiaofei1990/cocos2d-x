@@ -139,18 +139,23 @@ public:
 
     virtual int loadChunksFromZIP(const char *zipFilePath);
 
-    virtual void setXXTEAKeyAndSign(const char *key, int keyLen);
-    virtual void setXXTEAKeyAndSign(const char *key, int keyLen, const char *sign, int signLen);
     virtual bool handleAssert(const char *msg);
 
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
+    virtual void setXXTEAKeyAndSign(const char *key, int keyLen);
+    virtual void setXXTEAKeyAndSign(const char *key, int keyLen, const char *sign, int signLen);
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
+    
 protected:
     CCLuaStack(void)
     : m_state(NULL)
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
     , m_xxteaEnabled(false)
     , m_xxteaKey(NULL)
     , m_xxteaKeyLen(0)
     , m_xxteaSign(NULL)
     , m_xxteaSignLen(0)
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
     , m_callFromLua(0)
     , m_debuggerType(kCCLuaDebuggerNone)
     {
@@ -165,11 +170,13 @@ protected:
     static struct cc_timeval m_lasttime;
     static CCLuaStackMap s_map;
 
+#if CC_ENABLE_LUA_XXTEA_ENCRYPT
     bool  m_xxteaEnabled;
     char *m_xxteaKey;
     int   m_xxteaKeyLen;
     char *m_xxteaSign;
     int   m_xxteaSignLen;
+#endif // CC_ENABLE_LUA_XXTEA_ENCRYPT
 
 public:
     static int lua_print(lua_State *L);
