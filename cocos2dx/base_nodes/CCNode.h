@@ -62,12 +62,14 @@ enum {
 };
 
 enum {
-    kCCNodeOnEnter,
+    kCCNodeOnEnter = 1,
     kCCNodeOnExit,
     kCCNodeOnEnterTransitionDidFinish,
     kCCNodeOnExitTransitionDidStart,
-    kCCNodeOnCleanup
+    kCCNodeOnCleanup,
+    kCCNodeOnEnterFrame
 };
+
 
 /** @brief CCNode is the main element. Anything that gets drawn or contains things that get drawn is a CCNode.
  The most popular CCNodes are: CCScene, CCLayer, CCSprite, CCMenu.

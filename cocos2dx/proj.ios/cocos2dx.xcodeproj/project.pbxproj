@@ -296,6 +296,8 @@
 		2E7338B418E42E15001753C6 /* ioapi_mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E7338B218E42E15001753C6 /* ioapi_mem.cpp */; };
 		2E7338B518E42E15001753C6 /* ioapi_mem.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E7338B318E42E15001753C6 /* ioapi_mem.h */; };
 		2E7338B718E42E37001753C6 /* CCCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E7338B618E42E37001753C6 /* CCCommon.cpp */; };
+		2E89B2C218EAAD47008AE163 /* CCScriptEventDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2E89B2C018EAAD47008AE163 /* CCScriptEventDispatcher.cpp */; };
+		2E89B2C318EAAD47008AE163 /* CCScriptEventDispatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E89B2C118EAAD47008AE163 /* CCScriptEventDispatcher.h */; };
 		37EEEBF8175DDF3A003C1193 /* CCComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37EEEBF4175DDF3A003C1193 /* CCComponent.cpp */; };
 		37EEEBF9175DDF3A003C1193 /* CCComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 37EEEBF5175DDF3A003C1193 /* CCComponent.h */; };
 		37EEEBFA175DDF3A003C1193 /* CCComponentContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 37EEEBF6175DDF3A003C1193 /* CCComponentContainer.cpp */; };
@@ -616,6 +618,8 @@
 		2E7338B218E42E15001753C6 /* ioapi_mem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ioapi_mem.cpp; sourceTree = "<group>"; };
 		2E7338B318E42E15001753C6 /* ioapi_mem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi_mem.h; sourceTree = "<group>"; };
 		2E7338B618E42E37001753C6 /* CCCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCCommon.cpp; sourceTree = "<group>"; };
+		2E89B2C018EAAD47008AE163 /* CCScriptEventDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCScriptEventDispatcher.cpp; sourceTree = "<group>"; };
+		2E89B2C118EAAD47008AE163 /* CCScriptEventDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCScriptEventDispatcher.h; sourceTree = "<group>"; };
 		37EEEBF4175DDF3A003C1193 /* CCComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCComponent.cpp; sourceTree = "<group>"; };
 		37EEEBF5175DDF3A003C1193 /* CCComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCComponent.h; sourceTree = "<group>"; };
 		37EEEBF6175DDF3A003C1193 /* CCComponentContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCComponentContainer.cpp; sourceTree = "<group>"; };
@@ -783,6 +787,8 @@
 				1551A386158F2ADE00E66CFE /* CCDictionary.cpp */,
 				1551A387158F2ADE00E66CFE /* CCDictionary.h */,
 				1A5B48E816F084CC008568FC /* CCDouble.h */,
+				2E89B2C018EAAD47008AE163 /* CCScriptEventDispatcher.cpp */,
+				2E89B2C118EAAD47008AE163 /* CCScriptEventDispatcher.h */,
 				1A5B48E916F084CC008568FC /* CCFloat.h */,
 				1551A388158F2ADE00E66CFE /* CCGeometry.cpp */,
 				1551A389158F2ADE00E66CFE /* CCGeometry.h */,
@@ -1451,6 +1457,7 @@
 				1551A851158F2ADF00E66CFE /* unzip.h in Headers */,
 				1551A853158F2ADF00E66CFE /* ZipUtils.h in Headers */,
 				1551A854158F2ADF00E66CFE /* CCIMEDelegate.h in Headers */,
+				2E89B2C318EAAD47008AE163 /* CCScriptEventDispatcher.h in Headers */,
 				1551A856158F2ADF00E66CFE /* CCIMEDispatcher.h in Headers */,
 				1551A858158F2ADF00E66CFE /* CCTextFieldTTF.h in Headers */,
 				1551A85A158F2ADF00E66CFE /* CCTexture2D.h in Headers */,
@@ -1629,6 +1636,7 @@
 				1551A818158F2ADF00E66CFE /* CCGLProgram.cpp in Sources */,
 				1551A81A158F2ADF00E66CFE /* ccGLStateCache.cpp in Sources */,
 				1551A829158F2ADF00E66CFE /* CCShaderCache.cpp in Sources */,
+				2E89B2C218EAAD47008AE163 /* CCScriptEventDispatcher.cpp in Sources */,
 				1551A82C158F2ADF00E66CFE /* ccShaders.cpp in Sources */,
 				1551A82E158F2ADF00E66CFE /* CCAnimation.cpp in Sources */,
 				1551A830158F2ADF00E66CFE /* CCAnimationCache.cpp in Sources */,
